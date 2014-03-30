@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+
+import sys
+import itertools
+import functools
+import collections
+import shlex
+import subprocess
+import os
+
+
+def run(command, show=True, assert_success=True, env=None):
+    popen = subprocess.Popen(
+        shlex.split(('bash -c "%s"' % command)), stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, env=env
+    )
+    stdout, stderr = map(str.strip, map(bytes.decode, popen.communicate()))
+    
+    if show:
+        if stdout: print(stdout)
+        if stderr: print(stderr)
+    if popen.returncode != 0:
+        print('Failure')
+        raise SystemExit
+    return stdout
+
+
+def iterate_overlapping_pairs(iterable):
+    iterator = iter(iterable)
+    old_item = next(iterator) # Recycling `StopIteration`
+    for item in iterator:
+        yield (old_item, item)
+        old_item = item
+
+
+def to_branches_set(branch_or_branches):
+    if isinstance(branch_or_branches, str):
+        return {branch_or_branches}
+    else:
+        assert isinstance(branch_or_branches, collections.Iterable)
+        return set(branch_or_branches)
+    
+
+config_lines = run('git config --list', show=False).split('\n')
+
+###############################################################################
+#                                                                             #
+alias_strings = [line[19:] for line in config_lines if
+                   line.startswith('git-branch-aliases.')]
+aliases_dict = dict(
+    alias_string.split('=', 1) for alias_string in alias_strings
+)
+expand_alias = lambda branch: aliases_dict.get(branch, branch)
+#                                                                             #
+###############################################################################
+
+### Organizing cascades: ######################################################
+#                                                                             #
+cascade_strings = [line[20:] for line in config_lines if
+                   line.startswith('git-cascade.cascade=')]
+
+class CascadeStep:
+    
+    cascade_steps = set()
+    
+    def __init__(self, source, destination):
+        self.source = source
+        self.destination = destination
+        
+    def save(self):
+        if self.source != self.destination:
+            CascadeStep.cascade_steps.add(self)
+        
+    @staticmethod
+    def get_destinations_for_branches(branches):
+        branches = to_branches_set(branches)
+        return {cascade_step.destination for cascade_step in
+                  CascadeStep.cascade_steps if cascade_step.source in branches}
+        
+    @staticmethod
+    def get_all_destinations_for_branches(branches):
+        branches = to_branches_set(branches)
+        direct_destinations_without_current = \
+                 CascadeStep.get_destinations_for_branches(branches) - branches
+        return functools.reduce(
+            set.union,
+            (CascadeStep.get_all_destinations_for_branches(destination) for
+                           destination in direct_destinations_without_current),
+            direct_destinations_without_current
+        )
+        
+    #@staticmethod
+    #def branch_order(self, branch_0, branch_1):
+        #if branch_0 in CascadeStep.get_all_destinations_for_branch(branch_1):
+            #return 
+        
+    @staticmethod
+    def get_branch_strength(branch):
+        return len(CascadeStep.get_all_destinations_for_branches(branch))
+    
+    
+    def __repr__(self):
+        return '<%s: %s < %s' % (type(self).__name__,
+                                 self.source, self.destination)
+        
+        
+        
+for cascade_string in cascade_strings:
+    cascade_branches = \
+                     reversed(tuple(map(str.strip, cascade_string.split('>'))))
+    for source, destination in iterate_overlapping_pairs(cascade_branches):
+        CascadeStep(source, destination).save()
+    
+#                                                                             #
+### Finished organizing cascades. #############################################
+
+### Analyzing input to get source and destinations: ###########################
+#                                                                             #
+branches = tuple(map(expand_alias, map(str.strip, sys.argv[1:])))
+if not branches:
+    raise NotImplementedError
+if len(branches) == 1:
+    global_source = 'HEAD'
+    global_destinations = {branches[0]}
+else:
+    assert len(branches) >= 2
+    global_source = branches[0]
+    global_destinations = set(branches[1:])
+#                                                                             #
+### Finished analyzing input to get source and destinations. ##################
+    
+#gfm_pairs = set()
+
+    
+affected_cascade_branches = global_destinations | \
+             CascadeStep.get_all_destinations_for_branches(global_destinations)
+
+gfm_pairs = set(
+    itertools.chain(
+        *[[(global_source, destination) for destination in
+           CascadeStep.get_destinations_for_branches(affected_cascade_branch)]
+        for affected_cascade_branch in affected_cascade_branches]
+    )
+)
+
+gfm_pairs |= {(global_source, global_destination) for global_destination in
+             global_destinations}
+
+sorted_gfm_pairs = sorted(gfm_pairs,
+                         key=lambda gfm_pair:
+                                  CascadeStep.get_branch_strength(gfm_pair[1]),
+                         reverse=True)
+
+execute_string = ' && '.join(
+    ('git-forward-merge %s %s' % gfm_pair) for gfm_pair in sorted_gfm_pairs
+)
+print('Running: %s' % execute_string)
+
+run(execute_string)

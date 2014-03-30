@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+
+import sys
+import io
+import os
+import subprocess
+import shutil
+import contextlib
+import tempfile
+import shlex
+
+
+@contextlib.contextmanager
+def create_temp_folder():
+    '''
+    Context manager that creates a temporary folder and deletes it after usage.
+    '''
+    temp_folder = tempfile.mkdtemp(prefix='git-forward-merge')
+    yield temp_folder
+    shutil.rmtree(temp_folder)
+
+
+def run(command, show=True, assert_success=True, env=None):
+    popen = subprocess.Popen(
+        shlex.split(('bash -c "%s"' % command)), stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, env=env
+    )
+    stdout, stderr = map(str.strip, map(bytes.decode, popen.communicate()))
+    
+    if show:
+        if stdout: print(stdout)
+        if stderr: print(stderr)
+    if popen.returncode != 0:
+        print('Failure')
+        raise SystemExit
+    return stdout
+
+
+def get_fast_forward_status(branch_1, branch_2):
+    first_commit = run('git merge-base %s %s' % (branch_1, branch_1),
+                       show=False)
+    second_commit = run('git merge-base %s %s' % (branch_2, branch_2),
+                        show=False)
+    base_commit=run('git merge-base %s %s' % (branch_1, branch_2), show=False)
+    if second_commit == base_commit:
+        return 1
+    elif first_commit == base_commit:
+        return -1
+    else:
+        return 0
+
+def show_help_and_exit():
+    print('git-forward-merge help')
+    raise SystemExit
+    
+
+git_top_level = run('git rev-parse --show-toplevel', show=False)
+config_lines = run('git config --list', show=False).split('\n')
+
+
+###############################################################################
+#                                                                             #
+alias_strings = [line[19:] for line in config_lines if
+                   line.startswith('git-branch-aliases.')]
+aliases_dict = dict(
+    alias_string.split('=', 1) for alias_string in alias_strings
+)
+expand_alias = lambda branch: aliases_dict.get(branch, branch)
+#                                                                             #
+###############################################################################
+
+if '--help' in sys.argv:
+    show_help_and_exit()
+
+### Analyzing input to get source and destinations: ###########################
+#                                                                             #
+branches = tuple(map(expand_alias, map(str.strip, sys.argv[1:])))
+if not branches:
+    show_help_and_exit()
+if len(branches) == 1:
+    source = 'HEAD'
+    destinations = {branches[0]}
+else:
+    assert len(branches) >= 2
+    source = branches[0]
+    destinations = set(branches[1:])
+#                                                                             #
+### Finished analyzing input to get source and destinations. ##################
+    
+
+print('Pushing %s' % (', '.join(
+      (('%s -> %s' % (source, destination)) for destination in destinations))))
+
+for destination in destinations:
+    fast_forward_status = get_fast_forward_status(source, destination)
+    if fast_forward_status == 1:
+        run('git push . %s:%s' % (source, destination))
+    elif fast_forward_status == 0:
+        GIT_INDEX_FILE = '%s/.git/aux-merge-index' % git_top_level
+        with create_temp_folder() as GIT_WORK_TREE:
+            def run_in_sandbox(command):
+                env = os.environ.copy()
+                env.update({'GIT_INDEX_FILE': GIT_INDEX_FILE,
+                            'GIT_WORK_TREE': GIT_WORK_TREE})
+                return run(command, env=env)
+            try:
+                run_in_sandbox("mkdir '%s/.git'" % GIT_WORK_TREE)
+                run_in_sandbox("git read-tree -im %s %s %s" %
+                     (run_in_sandbox('git merge-base %s %s' % (destination, source)),
+                      destination, source))
+                run_in_sandbox('git merge-index git-merge-one-file -a')
+                run_in_sandbox("git write-tree | xargs -i@ git commit-tree @ -p {destination} "
+                     "-p {source} -m 'Merge {source} into {destination}' "
+                     "| xargs git update-ref -m'Merge {source} into {destination}' "
+                     "refs/heads/{destination} ;".format(source=source,
+                                                         destination=destination))
+            finally:
+                run("rm -f '%s'" % GIT_INDEX_FILE)
+    else:
+        assert fast_forward_status == -1
+        
