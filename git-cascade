@@ -40,6 +40,10 @@ def to_branches_set(branch_or_branches):
         assert isinstance(branch_or_branches, collections.Iterable)
         return set(branch_or_branches)
     
+def show_help_and_exit():
+    print('git-cascade help')
+    raise SystemExit
+
 
 config_lines = run('git config --list', show=False).split('\n')
 
