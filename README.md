@@ -8,7 +8,7 @@ This package contains the following scripts:
 
 
 Installation
-============
+------------
 
 Installation is manual. Manually copy the two scripts into your scripts
 directory.
