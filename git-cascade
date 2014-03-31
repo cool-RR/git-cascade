@@ -94,6 +94,15 @@ Limitation
 work for merges that require conflict resolution. For that, please resort to
 using `git merge`.
 
+If you do attempt a cascade that results in a merge that requires conflict\
+resolution, `git cascade` will abort the merge and leave your working
+directory clean, UNLESS the branch you're merging to is the current branch, in
+which case it will leave the merge in the working directory for you to resolve
+the conflict and commit, just like `git merge`.
+
+(If there were multiple merges, all merges up to the failing one will be
+completed in the repo.)
+
 
 Branch aliases
 --------------
