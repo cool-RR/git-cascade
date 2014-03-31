@@ -50,6 +50,9 @@ def show_help_and_exit():
 
 config_lines = run('git config --list', show=False).split('\n')
 
+if '--help' in sys.argv:
+    show_help_and_exit()
+
 ###############################################################################
 #                                                                             #
 alias_strings = [line[19:] for line in config_lines if
@@ -125,7 +128,7 @@ for cascade_string in cascade_strings:
 #                                                                             #
 branches = tuple(map(expand_alias, map(str.strip, sys.argv[1:])))
 if not branches:
-    raise NotImplementedError
+    show_help_and_exit()
 if len(branches) == 1:
     global_source = 'HEAD'
     global_destinations = {branches[0]}

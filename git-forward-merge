@@ -12,7 +12,7 @@ import contextlib
 import tempfile
 import shlex
 
-__doc__ = '''
+__doc__ = '''\
 titfuck
 '''
 
@@ -62,8 +62,11 @@ def show_help_and_exit():
     
 
 git_top_level = run('git rev-parse --show-toplevel', show=False)
-config_lines = run('git config --list', show=False).split('\n')
 
+if '--help' in sys.argv:
+    show_help_and_exit()
+
+config_lines = run('git config --list', show=False).split('\n')
 
 ###############################################################################
 #                                                                             #
@@ -76,8 +79,6 @@ expand_alias = lambda branch: aliases_dict.get(branch, branch)
 #                                                                             #
 ###############################################################################
 
-if '--help' in sys.argv:
-    show_help_and_exit()
 
 ### Analyzing input to get source and destinations: ###########################
 #                                                                             #
