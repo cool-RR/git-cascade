@@ -1,4 +1,4 @@
-`git cascade` and `git forward-merge`
+git cascade and git forward-merge
 =====================================
 
 This package contains the following scripts:
