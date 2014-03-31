@@ -86,36 +86,46 @@ else:
     destinations = set(branches[1:])
 #                                                                             #
 ### Finished analyzing input to get source and destinations. ##################
-    
+
+current_branch = run('git rev-parse --abbrev-ref HEAD')    
 
 print('Pushing %s' % (', '.join(
       (('%s -> %s' % (source, destination)) for destination in destinations))))
 
 for destination in destinations:
-    fast_forward_status = get_fast_forward_status(source, destination)
-    if fast_forward_status == 1:
-        run('git push . %s:%s' % (source, destination))
-    elif fast_forward_status == 0:
-        GIT_INDEX_FILE = '%s/.git/aux-merge-index' % git_top_level
-        with create_temp_folder() as GIT_WORK_TREE:
-            def run_in_sandbox(command):
-                env = os.environ.copy()
-                env.update({'GIT_INDEX_FILE': GIT_INDEX_FILE,
-                            'GIT_WORK_TREE': GIT_WORK_TREE})
-                return run(command, env=env)
-            try:
-                run_in_sandbox("mkdir '%s/.git'" % GIT_WORK_TREE)
-                run_in_sandbox("git read-tree -im %s %s %s" %
-                     (run_in_sandbox('git merge-base %s %s' % (destination, source)),
-                      destination, source))
-                run_in_sandbox('git merge-index git-merge-one-file -a')
-                run_in_sandbox("git write-tree | xargs -i@ git commit-tree @ -p {destination} "
-                     "-p {source} -m 'Merge {source} into {destination}' "
-                     "| xargs git update-ref -m'Merge {source} into {destination}' "
-                     "refs/heads/{destination} ;".format(source=source,
-                                                         destination=destination))
-            finally:
-                run("rm -f '%s'" % GIT_INDEX_FILE)
+    if destination == current_branch:
+        run('git merge %s' % source)
+    else:
+        fast_forward_status = get_fast_forward_status(source, destination)
+        if fast_forward_status == 1:
+            run('git push . %s:%s' % (source, destination))
+        elif fast_forward_status == 0:
+            GIT_INDEX_FILE = '%s/.git/aux-merge-index' % git_top_level
+            with create_temp_folder() as GIT_WORK_TREE:
+                def run_in_sandbox(command):
+                    env = os.environ.copy()
+                    env.update({'GIT_INDEX_FILE': GIT_INDEX_FILE,
+                                'GIT_WORK_TREE': GIT_WORK_TREE})
+                    return run(command, env=env)
+                try:
+                    os.mkdir('%s.git' % GIT_WORK_TREE)
+                    run_in_sandbox(
+                        "git read-tree -im %s %s %s" %
+                            (run_in_sandbox('git merge-base %s %s' %
+                                                        (destination, source)),
+                             destination, source)
+                    )
+                    run_in_sandbox('git merge-index git-merge-one-file -a')
+                    run_in_sandbox(
+                        "git write-tree | xargs -i@ git commit-tree @ -p "
+                        "{destination} -p {source} -m 'Merge {source} into "
+                        "{destination}' | xargs git update-ref -m'Merge "
+                        "{source} into {destination}' "
+                        "refs/heads/{destination};"
+                                .format(source=source, destination=destination)
+                    )
+                finally:
+                    os.remove(GIT_INDEX_FILE)
     else:
         assert fast_forward_status == -1
         
