@@ -18,7 +18,7 @@ git cascade - Cascade changes from each branch to its dependents.
 This command:
 
     git cascade foo master
-    
+
 Merges the branch `foo` into branch `master`, and into every branch that's
 behind `master` in the cascade order. What does that mean?
 
@@ -26,7 +26,7 @@ In many projects, there's a progressive order of branches that changes go
 through. For example:
 
     development > staging > master
-    
+
 This means that a new change might first get committed into development, then
 after testing will be merged into `staging`, then after further testing get
 merged into `master`.
@@ -39,7 +39,7 @@ In these cases, you want to push to `master`, and automatically push to all
 branches that are behind `master`. In our example, if you run:
 
     git cascade foo master
-    
+
 The changes in `foo` will be automatically pushed to `master`, `staging` and
 `development`, all in one command, without having to check any of them out.
 
@@ -59,38 +59,38 @@ project config: (.git/config)
 
     [git-cascade]
         cascade = development > staging > master
-        
+
 You may also include multiple lines to define more complex cascade trees:
-    
+
     [git-cascade]
         cascade = development > staging > master
         cascade = other_development > staging
-        
-`git cascade` will do the right thing when cascading. 
+
+`git cascade` will do the right thing when cascading.
 
 
 Alternate forms
 ---------------
 
 If using three or more arguments, the branch specified in the first argument
-will be cascaded into all the other branches, and all their dependents. So this: 
+will be cascaded into all the other branches, and all their dependents. So this:
 
     git cascade foo staging whatever
 
 Will cascade `foo` into `staging`, `whatever` and all of their dependents.
 
 If only one argument is specified, git cascade will assume you want to cascade
-`HEAD` (the current commit) into the specified branch. So this: 
+`HEAD` (the current commit) into the specified branch. So this:
 
     git cascade staging
-    
+
 Will cascade `HEAD` into `staging` and all of its dependents.
 
 
-How does it work? 
+How does it work?
 -----------------
 
-The merges in `git cascade` are done by `git forward-merge`, which creates a 
+The merges in `git cascade` are done by `git forward-merge`, which creates a
 temporary git index file and working directory to be used only for the merge,
 without interfering with the actual index file and working directory. (Unless
 the merge is a fast-forward, in which case the merge is done trivially by a
@@ -124,11 +124,11 @@ config or the global one):
     [git-branch-aliases]
         s = staging
         m = master
-        
+
 And then run:
 
     git cascade foo m
-    
+
 It will cascade `foo` into `master` and all of its dependents.
 '''
 
@@ -143,7 +143,7 @@ def run(command, show=True, assert_success=True, env=None):
         stderr=subprocess.PIPE, env=env
     )
     stdout, stderr = map(str.strip, map(bytes.decode, popen.communicate()))
-    
+
     if show:
         if stdout: print(stdout)
         if stderr: print(stderr)
@@ -167,7 +167,7 @@ def to_branches_set(branch_or_branches):
     else:
         assert isinstance(branch_or_branches, collections.Iterable)
         return set(branch_or_branches)
-    
+
 def show_help_and_exit():
     print(__doc__)
     raise SystemExit(0)
@@ -195,23 +195,23 @@ cascade_strings = [line[20:] for line in config_lines if
                    line.startswith('git-cascade.cascade=')]
 
 class CascadeStep:
-    
+
     cascade_steps = set()
-    
+
     def __init__(self, source, destination):
         self.source = source
         self.destination = destination
-        
+
     def save(self):
         if self.source != self.destination:
             CascadeStep.cascade_steps.add(self)
-        
+
     @staticmethod
     def get_destinations_for_branches(branches):
         branches = to_branches_set(branches)
         return {cascade_step.destination for cascade_step in
                   CascadeStep.cascade_steps if cascade_step.source in branches}
-        
+
     @staticmethod
     def get_all_destinations_for_branches(branches):
         branches = to_branches_set(branches)
@@ -223,29 +223,29 @@ class CascadeStep:
                            destination in direct_destinations_without_current),
             direct_destinations_without_current
         )
-        
+
     #@staticmethod
     #def branch_order(self, branch_0, branch_1):
         #if branch_0 in CascadeStep.get_all_destinations_for_branch(branch_1):
-            #return 
-        
+            #return
+
     @staticmethod
     def get_branch_strength(branch):
         return len(CascadeStep.get_all_destinations_for_branches(branch))
-    
-    
+
+
     def __repr__(self):
         return '<%s: %s < %s' % (type(self).__name__,
                                  self.source, self.destination)
-        
-        
-        
+
+
+
 for cascade_string in cascade_strings:
     cascade_branches = \
                      reversed(tuple(map(str.strip, cascade_string.split('>'))))
     for source, destination in iterate_overlapping_pairs(cascade_branches):
         CascadeStep(source, destination).save()
-    
+
 #                                                                             #
 ### Finished organizing cascades. #############################################
 
@@ -263,10 +263,10 @@ else:
     global_destinations = set(branches[1:])
 #                                                                             #
 ### Finished analyzing input to get source and destinations. ##################
-    
+
 #gfm_pairs = set()
 
-    
+
 affected_cascade_branches = global_destinations | \
              CascadeStep.get_all_destinations_for_branches(global_destinations)
 
