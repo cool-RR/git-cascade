@@ -130,7 +130,7 @@ def run(command, show=True, assert_success=True, env=None):
         if stderr: print(stderr)
     if popen.returncode != 0:
         print('Failure')
-        raise SystemExit
+        raise SystemExit(1)
     return stdout
 
 
@@ -151,7 +151,7 @@ def to_branches_set(branch_or_branches):
     
 def show_help_and_exit():
     print(__doc__)
-    raise SystemExit
+    raise SystemExit(0)
 
 
 config_lines = run('git config --list', show=False).split('\n')

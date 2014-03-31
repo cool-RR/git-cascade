@@ -98,7 +98,7 @@ def run(command, show=True, assert_success=True, env=None):
         if stderr: print(stderr)
     if popen.returncode != 0:
         print('Failure')
-        raise SystemExit
+        raise SystemExit(1)
     return stdout
 
 
@@ -117,7 +117,7 @@ def get_fast_forward_status(branch_1, branch_2):
 
 def show_help_and_exit():
     print(__doc__)
-    raise SystemExit
+    raise SystemExit(0)
     
 
 git_top_level = run('git rev-parse --show-toplevel', show=False)
