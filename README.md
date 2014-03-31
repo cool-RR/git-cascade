@@ -11,9 +11,13 @@ Installation
 ============
 
 Installation is manual. Manually copy the two scripts into your scripts
-directory. On Linux it's `/usr/local/bin`, on Windows with Msysgit you can copy
-them into `C:\Program Files (x86)\Git\bin`. You may also use any other
-directory that is on `$PATH`.
+directory.
+
+ - On Linux it's `/usr/local/bin`.
+ - On Windows with Msysgit you can copy them into `C:\Program Files (x86)\Git\bin`.
+ - On Mac you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/)
+ 
+You may also use any other directory that is on `$PATH`.
 
 
 git cascade - Cascade changes from each branch to its dependents.
