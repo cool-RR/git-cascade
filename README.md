@@ -11,7 +11,7 @@ Requirements
 ------------
 
  - Python 3.x. (Which must be accessible using `python3`; if you're on
-Windows you might need to set this up.)
+Windows, you might need to set this up.)
 
 
 Installation
@@ -20,9 +20,9 @@ Installation
 Installation is manual. Manually copy the two scripts into your scripts
 directory.
 
- - On Linux it's `/usr/local/bin`.
- - On Windows with Msysgit you can copy them into `C:\Program Files (x86)\Git\bin`.
- - On Mac you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/)
+ - On Linux, it's `/usr/local/bin`.
+ - On Windows with Msysgit, you can copy them into `C:\Program Files (x86)\Git\bin`.
+ - On Mac, you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/)
 
 You may also use any other directory that is on `$PATH`.
 
@@ -119,10 +119,10 @@ Limitation
 work for merges that require conflict resolution. For that, please resort to
 using `git merge`.
 
-If you do attempt a cascade that results in a merge that requires conflict\
+If you do attempt a cascade that results in a merge that requires conflict
 resolution, `git cascade` will abort the merge and leave your working
-directory clean, UNLESS the branch you're merging to is the current branch, in
-which case it will leave the merge in the working directory for you to resolve
+directory clean, UNLESS the branch you're merging to is the current branch. In
+that case, it will leave the merge in the working directory for you to resolve
 the conflict and commit, just like `git merge`.
 
 (If there were multiple merges, all merges up to the failing one will be
