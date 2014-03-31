@@ -7,6 +7,13 @@ This package contains the following scripts:
  - `git forward-merge` - Merge branches without checking them out.
 
 
+Requirements
+------------
+
+ - Python 3.x. (Which must be accessible using `python3`; if you're on 
+Windows you might need to set this up.)
+
+
 Installation
 ------------
 
