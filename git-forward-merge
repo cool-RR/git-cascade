@@ -68,7 +68,7 @@ It will merge `staging` into `master`.
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
 __version__ = '0.1'
-__version_info__ = VersionInfo(0, 0, 1, 'final')
+__version_info__ = VersionInfo(0, 0, 1, 'alpha')
 
 @contextlib.contextmanager
 def create_temp_folder():
@@ -155,6 +155,8 @@ print('Pushing %s' % (', '.join(
 
 for destination in destinations:
     if destination == current_branch:
+        print('Since %s is currently checked out, using `git merge` '
+              'directly...' % destination)
         run('git merge %s' % source)
     else:
         fast_forward_status = get_fast_forward_status(source, destination)
@@ -189,4 +191,6 @@ for destination in destinations:
                     os.remove(GIT_INDEX_FILE)
         else:
             assert fast_forward_status == -1
+            print('%s is already ahead of %s, no need to merge.' %
+                                                         (destination, source))
         
