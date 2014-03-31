@@ -38,8 +38,8 @@ Push branch `foo` into `bar`, `baz` and `meow`:
 
     git forward-merge foo bar baz meow
 
- 
-How does it work? 
+
+How does it work?
 -----------------
 
 `git forward-merge` creates a temporary git index file and working directory to
@@ -47,7 +47,7 @@ be used only for the merge, without interfering with the actual index file and
 working directory. (Unless the merge is a fast-forward, in which case the merge
 is done trivially by a local push.)
 
-   
+
 Limitation
 ----------
 
@@ -72,11 +72,11 @@ config or the global one):
     [git-branch-aliases]
         s = staging
         m = master
-        
+
 And then run:
 
     git forward-merge s m
-    
+
 It will merge `staging` into `master`.
 '''
 
@@ -208,4 +208,4 @@ for destination in destinations:
             assert fast_forward_status == -1
             print('%s is already ahead of %s, no need to merge.' %
                                                          (destination, source))
-        
+

@@ -20,10 +20,10 @@ Installation
 Installation is manual. Manually copy the two scripts into your scripts
 directory.
 
- - On Linux it's `/usr/local/bin`.
- - On Windows with Msysgit you can copy them into `C:\Program Files (x86)\Git\bin`.
- - On Mac you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/)
- 
+ - On Linux, it's `/usr/local/bin`.
+ - On Windows with Msysgit, you can copy them into `C:\Program Files (x86)\Git\bin`.
+ - On Mac, you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/)
+
 You may also use any other directory that is on `$PATH`.
 
 
@@ -33,7 +33,7 @@ git cascade - Cascade changes from each branch to its dependents.
 This command:
 
     git cascade foo master
-    
+
 Merges the branch `foo` into branch `master`, and into every branch that's
 behind `master` in the cascade order. What does that mean?
 
@@ -41,7 +41,7 @@ In many projects, there's a progressive order of branches that changes go
 through. For example:
 
     development > staging > master
-    
+
 This means that a new change might first get committed into development, then
 after testing will be merged into `staging`, then after further testing get
 merged into `master`.
@@ -54,7 +54,7 @@ In these cases, you want to push to `master`, and automatically push to all
 branches that are behind `master`. In our example, if you run:
 
     git cascade foo master
-    
+
 The changes in `foo` will be automatically pushed to `master`, `staging` and
 `development`, all in one command, without having to check any of them out.
 
@@ -74,41 +74,41 @@ project config: (.git/config)
 
     [git-cascade]
         cascade = development > staging > master
-        
+
 You may also include multiple lines to define more complex cascade trees:
-    
+
     [git-cascade]
         cascade = development > staging > master
         cascade = other_development > staging
-        
-`git cascade` will do the right thing when cascading. 
+
+`git cascade` will do the right thing when cascading.
 
 
 Alternate forms
 ---------------
 
 If using three or more arguments, the branch specified in the first argument
-will be cascaded into all the other branches, and all their dependents. So this: 
+will be cascaded into all the other branches, and all their dependents. So this:
 
     git cascade foo staging whatever
 
 Will cascade `foo` into `staging`, `whatever` and all of their dependents.
 
 If only one argument is specified, git cascade will assume you want to cascade
-`HEAD` (the current commit) into the specified branch. So this: 
+`HEAD` (the current commit) into the specified branch. So this:
 
     git cascade staging
-    
+
 Will cascade `HEAD` into `staging` and all of its dependents.
 
 
-How does it work? 
+How does it work?
 -----------------
 
-The merges in `git cascade` are done by `git forward-merge`, which creates a 
+The merges in `git cascade` are done by `git forward-merge`, which creates a
 temporary git index file and working directory to be used only for the merge,
-without interfering with the actual index file and working directory. (Unless 
-the merge is a fast-forward, in which case the merge is done trivially by a 
+without interfering with the actual index file and working directory. (Unless
+the merge is a fast-forward, in which case the merge is done trivially by a
 local push.)
 
 
@@ -119,7 +119,7 @@ Limitation
 work for merges that require conflict resolution. For that, please resort to
 using `git merge`.
 
-If you do attempt a cascade that results in a merge that requires conflict\
+If you do attempt a cascade that results in a merge that requires conflict
 resolution, `git cascade` will abort the merge and leave your working
 directory clean, UNLESS the branch you're merging to is the current branch, in
 which case it will leave the merge in the working directory for you to resolve
@@ -139,11 +139,11 @@ config or the global one):
     [git-branch-aliases]
         s = staging
         m = master
-        
+
 And then run:
 
     git cascade foo m
-    
+
 It will cascade `foo` into `master` and all of its dependents.
 
 
@@ -162,7 +162,7 @@ branch is currently checked out and which files are in the working tree.
 Push branch `foo` into `bar`:
 
     git forward-merge foo bar
-    
+
 Push current branch/commit into `bar`:
 
     git forward-merge bar
@@ -171,8 +171,8 @@ Push branch `foo` into `bar`, `baz` and `meow`:
 
     git forward-merge foo bar baz meow
 
-    
-How does it work? 
+
+How does it work?
 -----------------
 
 `git forward-merge` creates a temporary git index file and working directory to
@@ -180,7 +180,7 @@ be used only for the merge, without interfering with the actual index file and
 working directory. (Unless the merge is a fast-forward, in which case the merge
 is done trivially by a local push.)
 
-   
+
 Limitation
 ----------
 
@@ -205,11 +205,11 @@ config or the global one):
     [git-branch-aliases]
         s = staging
         m = master
-        
+
 And then run:
 
     git forward-merge s m
-    
+
 It will merge `staging` into `master`.
 
 
