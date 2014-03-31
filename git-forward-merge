@@ -63,14 +63,12 @@ And then run:
     git forward-merge s m
     
 It will merge `staging` into `master`.
-
 '''
 
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
 __version__ = '0.1'
 __version_info__ = VersionInfo(0, 0, 1, 'final')
-print(__version_info__)
 
 @contextlib.contextmanager
 def create_temp_folder():

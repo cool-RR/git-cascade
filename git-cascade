@@ -111,14 +111,12 @@ And then run:
     git cascade foo m
     
 It will cascade `foo` into `master` and all of its dependents.
-
 '''
 
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
 __version__ = '0.1'
 __version_info__ = VersionInfo(0, 0, 1, 'final')
-print(__version_info__)
 
 def run(command, show=True, assert_success=True, env=None):
     popen = subprocess.Popen(
