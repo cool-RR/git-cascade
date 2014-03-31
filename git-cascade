@@ -11,6 +11,114 @@ import shlex
 import subprocess
 import os
 
+__doc__ = '''\
+git cascade - Cascade changes from each branch to its dependents
+================================================================
+
+This command:
+
+    git cascade foo master
+    
+Merges the branch `foo` into branch `master`, and into every branch that's
+behind `master` in the cascade order. What does that mean?
+
+In many projects, there's a progressive order of branches that changes go
+through. For example:
+
+    development > staging > master
+    
+This means that a new change might first get committed into development, then
+after testing will be merged into `staging`, then after further testing get
+merged into `master`.
+
+That's all well and good, but sometimes you want to take a shortcut and push a
+change directly into a more advanced branch. (This can happen if the change is
+small enough that you're sure it won't break anything, or the change is urgent
+and needs to be pushed to production immediately, or a bunch of other reasons.)
+In these cases, you want to push to `master`, and automatically push to all
+branches that are behind `master`. In our example, if you run:
+
+    git cascade foo master
+    
+The changes in `foo` will be automatically pushed to `master`, `staging` and
+`development`, all in one command, without having to check any of them out.
+
+If you were to type:
+
+    git cascade foo staging
+
+Then the changes will be pushed only to `staging` and `development`, with
+master remaining untouched.
+
+
+Defining cascades
+-----------------
+
+To define the cascade order for your project, put it in this format in your
+project config: (.git/config)
+
+    [git-cascade]
+        cascade = development > staging > master
+        
+You may also include multiple lines to define more complex cascade trees:
+    
+    [git-cascade]
+        cascade = development > staging > master
+        cascade = other_development > staging
+        
+`git cascade` will do the right thing when cascading. 
+
+
+Alternate forms
+---------------
+
+If using three or more arguments, the branch specified in the first argument
+will be cascaded into all the other branches, and all their dependents. So this: 
+
+    git cascade foo staging whatever
+
+Will cascade `foo` into `staging`, `whatever` and all of their dependents.
+
+If only one argument is specified, git cascade will assume you want to cascade
+`HEAD` (the current commit) into the specified branch. So this: 
+
+    git cascade staging
+    
+Will cascade `HEAD` into `staging` and all of its dependents.
+
+
+Limitation
+----------
+
+`git cascade` works only when the merge can be done automatically. It doesn't
+work for merges that require conflict resolution. For that, please resort to
+using `git merge`.
+
+
+Branch aliases
+--------------
+
+You may use branch aliases when using `git cascade`. So,
+if you defined something like this in your config, (either the repo-specific
+config or the global one):
+
+    [git-branch-aliases]
+        s = staging
+        m = master
+        
+And then run:
+
+    git cascade foo m
+    
+It will cascade `foo` into `master` and all of its dependents.
+
+'''
+
+VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
+
+__version__ = '0.1'
+__version_info__ = VersionInfo(0, 0, 1, 'final')
+print(__version_info__)
 
 def run(command, show=True, assert_success=True, env=None):
     popen = subprocess.Popen(
@@ -44,7 +152,7 @@ def to_branches_set(branch_or_branches):
         return set(branch_or_branches)
     
 def show_help_and_exit():
-    print('git-cascade help')
+    print(__doc__)
     raise SystemExit
 
 

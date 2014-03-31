@@ -9,13 +9,68 @@ import os
 import subprocess
 import shutil
 import contextlib
+import collections
 import tempfile
 import shlex
 
 __doc__ = '''\
-titfuck
+git forward-merge - Merge branches without checking them out.
+=============================================================
+
+This command was written in order to solve an annoyance with the built-in `git
+merge`. The annoying thing about `git merge` is that if one wants to merge
+branch `foo` into branch `bar`, one first needs to check out branch `bar`, and
+only then merge `foo` into it. This can become a drag, especially when having
+an unclean working tree.
+
+Enter `git forward-merge`. All pushes done with it work regardless of which
+branch is currently checked out and which files are in the working tree.
+
+Push branch `foo` into `bar`:
+
+    git forward-merge foo bar
+    
+Push current branch/commit into `bar`:
+
+    git forward-merge bar
+
+Push branch `foo` into `bar`, `baz` and `meow`:
+
+    git forward-merge foo bar baz meow
+
+    
+Limitation
+----------
+
+`git forward-merge` works only when the merge can be done
+automatically. It doesn't work for merges that require conflict resolution. For
+that, please resort to using `git merge`.
+
+
+Branch aliases
+--------------
+
+You may use branch aliases when using `git forward-merge`. So,
+if you defined something like this in your config, (either the repo-specific
+config or the global one):
+
+    [git-branch-aliases]
+        s = staging
+        m = master
+        
+And then run:
+
+    git forward-merge s m
+    
+It will merge `staging` into `master`.
+
 '''
 
+VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
+
+__version__ = '0.1'
+__version_info__ = VersionInfo(0, 0, 1, 'final')
+print(__version_info__)
 
 @contextlib.contextmanager
 def create_temp_folder():
