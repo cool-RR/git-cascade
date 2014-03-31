@@ -38,7 +38,16 @@ Push branch `foo` into `bar`, `baz` and `meow`:
 
     git forward-merge foo bar baz meow
 
-    
+ 
+How does it work? 
+-----------------
+
+`git forward-merge` creates a temporary git index file and working directory to
+be used only for the merge, without interfering with the actual index file and
+working directory. (Unless the merge is a fast-forward, in which case the merge
+is done trivially by a local push.)
+
+   
 Limitation
 ----------
 

@@ -95,6 +95,16 @@ If only one argument is specified, git cascade will assume you want to cascade
 Will cascade `HEAD` into `staging` and all of its dependents.
 
 
+How does it work? 
+-----------------
+
+The merges in `git cascade` are done by `git forward-merge`, which creates a 
+temporary git index file and working directory to be used only for the merge,
+without interfering with the actual index file and working directory. (Unless 
+the merge is a fast-forward, in which case the merge is done trivially by a 
+local push.)
+
+
 Limitation
 ----------
 
@@ -155,6 +165,15 @@ Push branch `foo` into `bar`, `baz` and `meow`:
     git forward-merge foo bar baz meow
 
     
+How does it work? 
+-----------------
+
+`git forward-merge` creates a temporary git index file and working directory to
+be used only for the merge, without interfering with the actual index file and
+working directory. (Unless the merge is a fast-forward, in which case the merge
+is done trivially by a local push.)
+
+   
 Limitation
 ----------
 
