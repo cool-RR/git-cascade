@@ -29,7 +29,7 @@ branch is currently checked out and which files are in the working tree.
 Push branch `foo` into `bar`:
 
     git forward-merge foo bar
-    
+
 Push current branch/commit into `bar`:
 
     git forward-merge bar
@@ -38,8 +38,8 @@ Push branch `foo` into `bar`, `baz` and `meow`:
 
     git forward-merge foo bar baz meow
 
- 
-How does it work? 
+
+How does it work?
 -----------------
 
 `git forward-merge` creates a temporary git index file and working directory to
@@ -47,7 +47,7 @@ be used only for the merge, without interfering with the actual index file and
 working directory. (Unless the merge is a fast-forward, in which case the merge
 is done trivially by a local push.)
 
-   
+
 Limitation
 ----------
 
@@ -72,11 +72,11 @@ config or the global one):
     [git-branch-aliases]
         s = staging
         m = master
-        
+
 And then run:
 
     git forward-merge s m
-    
+
 It will merge `staging` into `master`.
 '''
 
@@ -101,7 +101,7 @@ def run(command, show=True, assert_success=True, env=None):
         stderr=subprocess.PIPE, env=env
     )
     stdout, stderr = map(str.strip, map(bytes.decode, popen.communicate()))
-    
+
     if show:
         if stdout: print(stdout)
         if stderr: print(stderr)
@@ -127,7 +127,7 @@ def get_fast_forward_status(branch_1, branch_2):
 def show_help_and_exit():
     print(__doc__)
     raise SystemExit(0)
-    
+
 
 git_top_level = run('git rev-parse --show-toplevel', show=False)
 
@@ -163,7 +163,7 @@ else:
 #                                                                             #
 ### Finished analyzing input to get source and destinations. ##################
 
-current_branch = run('git rev-parse --abbrev-ref HEAD')    
+current_branch = run('git rev-parse --abbrev-ref HEAD')
 
 print('Pushing %s' % (', '.join(
       (('%s -> %s' % (source, destination)) for destination in destinations))))
@@ -208,4 +208,4 @@ for destination in destinations:
             assert fast_forward_status == -1
             print('%s is already ahead of %s, no need to merge.' %
                                                          (destination, source))
-        
+
