@@ -12,8 +12,8 @@ import subprocess
 import os
 
 __doc__ = '''\
-git cascade - Cascade changes from each branch to its dependents
-================================================================
+git cascade - Cascade changes from each branch to its dependents.
+=================================================================
 
 This command:
 
