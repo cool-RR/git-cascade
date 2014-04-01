@@ -22,7 +22,7 @@ directory.
 
  - On Linux, it's `/usr/local/bin`.
  - On Windows with Msysgit, you can copy them into `C:\Program Files (x86)\Git\bin`. (Though you might have to run them as `git-cascade` and `git-forward-merge` instead of `git cascade` and `git forward-merge` due to Windows shenanigans.)
- - On Mac, you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/)
+ - On Mac, you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/).
 
 You may also use any other directory that is on `$PATH`.
 
