@@ -51,7 +51,8 @@ change directly into a more advanced branch. (This can happen if the change is
 small enough that you're sure it won't break anything, or the change is urgent
 and needs to be pushed to production immediately, or a bunch of other reasons.)
 In these cases, you want to push to `master`, and automatically push to all
-branches that are behind `master`. In our example, if you run:
+branches that are behind `master` in the cascade order. In our example, if you 
+run:
 
     git cascade foo master
 
