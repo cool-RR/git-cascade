@@ -35,7 +35,9 @@ This command:
     git cascade foo master
 
 Merges the branch `foo` into branch `master`, and into every branch that's
-behind `master` in the cascade order. What does that mean?
+behind `master` (regarding the cascade order, not to confuse with Git's
+'ahead'/'behind'-terminology which is referring to tracking branches).
+What does that mean?
 
 In many projects, there's a progressive order of branches that changes go
 through. For example:
