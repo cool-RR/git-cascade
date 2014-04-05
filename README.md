@@ -86,6 +86,8 @@ You may also include multiple lines to define more complex cascade trees:
 
 `git cascade` will do the right thing when cascading.
 
+Run `git cascade --show` to show the list of current cascades.
+
 
 Alternate forms
 ---------------

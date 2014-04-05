@@ -68,6 +68,8 @@ You may also include multiple lines to define more complex cascade trees:
 
 `git cascade` will do the right thing when cascading.
 
+Run `git cascade --show` to show the list of current cascades.
+
 
 Alternate forms
 ---------------
@@ -173,10 +175,22 @@ def show_help_and_exit():
     raise SystemExit(0)
 
 
+def show_cascades_and_exit():
+    print('This is your cascade order:')
+    for cascade_string in cascade_strings:
+        print('    %s' % cascade_string)
+    raise SystemExit(0)
+
+
 config_lines = run('git config --list', show=False).split('\n')
+
+cascade_strings = [line[20:] for line in config_lines if
+                   line.startswith('git-cascade.cascade=')]
 
 if '--help' in sys.argv:
     show_help_and_exit()
+elif '--show' in sys.argv:
+    show_cascades_and_exit()
 
 ###############################################################################
 #                                                                             #
@@ -191,8 +205,6 @@ expand_alias = lambda branch: aliases_dict.get(branch, branch)
 
 ### Organizing cascades: ######################################################
 #                                                                             #
-cascade_strings = [line[20:] for line in config_lines if
-                   line.startswith('git-cascade.cascade=')]
 
 class CascadeStep:
     
