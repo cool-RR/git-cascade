@@ -17,14 +17,30 @@ Windows you might need to set this up.)
 Installation
 ------------
 
-Installation is manual. Manually copy the two scripts into your scripts
-directory.
+Installation is manual unfortunately, and basically involves putting both
+scripts in a directory that's in your `$PATH`. After downloading/cloning the
+repo, follow the instructions according to your operating system:
 
- - On Linux, it's `/usr/local/bin`.
- - On Windows with Msysgit, you can copy them into `C:\Program Files (x86)\Git\bin`. (Though you might have to run them as `git-cascade` and `git-forward-merge` instead of `git cascade` and `git forward-merge` due to Windows shenanigans.)
- - On Mac, you can peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/).
 
-You may also use any other directory that is on `$PATH`.
+### Linux ###
+
+Copy the two script files to `/usr/local/bin`. That's it. 
+
+
+### Windows (with Bash shell) ###
+
+On Windows with Msysgit, you can copy them into `C:\Program Files (x86)\Git\bin`.
+
+Two caveats:
+
+ - You might have to run them as `git-cascade` and `git-forward-merge` instead of `git cascade` and `git forward-merge` due to Windows shenanigans.
+ - If the scripts don't work, try replacing the shebang line with `#!c:\python34\python.exe`
+
+
+### Mac ###
+
+Peruse [this guide] (http://shapeshed.com/using_custom_shell_scripts_on_osx_or_linux/) and use it for the two scripts in this repo.
+
 
 
 git cascade - Cascade changes from each branch to its dependents.
