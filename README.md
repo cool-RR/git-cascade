@@ -34,7 +34,7 @@ On Windows with Msysgit, you can copy them into `C:\Program Files (x86)\Git\bin`
 Two caveats:
 
  - You might have to run them as `git-cascade` and `git-forward-merge` instead of `git cascade` and `git forward-merge` due to Windows shenanigans.
- - If the scripts don't work, try replacing the shebang line with `#!c:\python34\python.exe`
+ - If the scripts don't work, try replacing the shebang line with `#!c:\python34\python.exe` or wherever else you have Python 3 installed.
 
 
 ### Mac ###
