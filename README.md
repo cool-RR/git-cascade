@@ -27,14 +27,14 @@ repo, follow the instructions according to your operating system:
 Copy the two script files to `/usr/local/bin`. That's it. 
 
 
-### Windows (with Bash shell) ###
+### Windows ###
 
 On Windows with Msysgit, you can copy them into `C:\Program Files (x86)\Git\bin`.
 
 Following caveats:
 
  - You will probably have to replace the shebang line with `#!c:\python34\python.exe` or wherever else you have Python 3 installed.
- - You can only run these scripts from the ~Git Bash~. If you haven't installed Msysgit with `Git Bash Here` option, invoke `bin\bash.exe`.
+ - You can only run these scripts from the Git Bash. If you haven't installed Msysgit with `Git Bash Here` option, invoke `bin\bash.exe`.
  - You have to run `git-cascade` and `git-forward-merge` instead of `git cascade` and `git forward-merge` due to Windows shenanigans.
 
 
