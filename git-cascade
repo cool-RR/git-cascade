@@ -132,12 +132,14 @@ And then run:
     git cascade foo m
 
 It will cascade `foo` into `master` and all of its dependents.
+
+Also, you may use `.` as an alias for the current branch.
 '''
 
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
-__version__ = '0.1'
-__version_info__ = VersionInfo(0, 0, 1, 'alpha')
+__version__ = '0.2'
+__version_info__ = VersionInfo(0, 2, 'alpha')
 
 def run(command, show=True, assert_success=True, env=None):
     popen = subprocess.Popen(
@@ -199,9 +201,15 @@ alias_strings = [line[19:] for line in config_lines if
 aliases_dict = dict(
     alias_string.split('=', 1) for alias_string in alias_strings
 )
-expand_alias = lambda branch: aliases_dict.get(branch, branch)
+def expand_branch_name(short_branch_name):
+    if short_branch_name == '.':
+        return current_branch
+    else:
+        return aliases_dict.get(short_branch_name, short_branch_name)
 #                                                                             #
 ###############################################################################
+
+current_branch = run('git rev-parse --abbrev-ref HEAD')    
 
 ### Organizing cascades: ######################################################
 #                                                                             #
@@ -263,7 +271,7 @@ for cascade_string in cascade_strings:
 
 ### Analyzing input to get source and destinations: ###########################
 #                                                                             #
-branches = tuple(map(expand_alias, map(str.strip, sys.argv[1:])))
+branches = tuple(map(expand_branch_name, map(str.strip, sys.argv[1:])))
 if not branches:
     show_help_and_exit()
 if len(branches) == 1:

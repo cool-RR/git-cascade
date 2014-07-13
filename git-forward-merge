@@ -78,12 +78,14 @@ And then run:
     git forward-merge s m
 
 It will merge `staging` into `master`.
+
+Also, you may use `.` as an alias for the current branch.
 '''
 
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
-__version__ = '0.1'
-__version_info__ = VersionInfo(0, 0, 1, 'alpha')
+__version__ = '0.2'
+__version_info__ = VersionInfo(0, 2, 'alpha')
 
 @contextlib.contextmanager
 def create_temp_folder():
@@ -143,14 +145,19 @@ alias_strings = [line[19:] for line in config_lines if
 aliases_dict = dict(
     alias_string.split('=', 1) for alias_string in alias_strings
 )
-expand_alias = lambda branch: aliases_dict.get(branch, branch)
+def expand_branch_name(short_branch_name):
+    if short_branch_name == '.':
+        return current_branch
+    else:
+        return aliases_dict.get(short_branch_name, short_branch_name)
 #                                                                             #
 ###############################################################################
 
+current_branch = run('git rev-parse --abbrev-ref HEAD')    
 
 ### Analyzing input to get source and destinations: ###########################
 #                                                                             #
-branches = tuple(map(expand_alias, map(str.strip, sys.argv[1:])))
+branches = tuple(map(expand_branch_name, map(str.strip, sys.argv[1:])))
 if not branches:
     show_help_and_exit()
 if len(branches) == 1:
@@ -162,8 +169,6 @@ else:
     destinations = set(branches[1:])
 #                                                                             #
 ### Finished analyzing input to get source and destinations. ##################
-
-current_branch = run('git rev-parse --abbrev-ref HEAD')    
 
 print('Pushing %s' % (', '.join(
       (('%s -> %s' % (source, destination)) for destination in destinations))))
