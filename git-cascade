@@ -139,7 +139,7 @@ Also, you may use `.` as an alias for the current branch.
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
 __version__ = '0.2'
-__version_info__ = VersionInfo(0, 2, 'alpha')
+__version_info__ = VersionInfo(0, 2, 0, 'alpha')
 
 def run(command, show=True, assert_success=True, env=None):
     popen = subprocess.Popen(
