@@ -84,8 +84,8 @@ Also, you may use `.` as an alias for the current branch.
 
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
-__version__ = '0.2'
-__version_info__ = VersionInfo(0, 2, 0, 'alpha')
+__version__ = '0.3'
+__version_info__ = VersionInfo(0, 3, 0, 'alpha')
 
 @contextlib.contextmanager
 def create_temp_folder():

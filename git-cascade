@@ -88,6 +88,14 @@ If only one argument is specified, git cascade will assume you want to cascade
 
 Will cascade `HEAD` into `staging` and all of its dependents.
 
+If no arguments are specified:
+
+    git cascade
+    
+Then HEAD will be cascaded into the current branch. (It's often useful to
+cascade a branch into itself because it also merges it into the branches it
+flows into.)
+
 
 How does it work?
 -----------------
@@ -138,8 +146,8 @@ Also, you may use `.` as an alias for the current branch.
 
 VersionInfo = collections.namedtuple('VersionInfo', 'major minor micro release')
 
-__version__ = '0.2'
-__version_info__ = VersionInfo(0, 2, 0, 'alpha')
+__version__ = '0.3'
+__version_info__ = VersionInfo(0, 3, 0, 'alpha')
 
 def run(command, show=True, assert_success=True, env=None):
     popen = subprocess.Popen(
@@ -273,8 +281,9 @@ for cascade_string in cascade_strings:
 #                                                                             #
 branches = tuple(map(expand_branch_name, map(str.strip, sys.argv[1:])))
 if not branches:
-    show_help_and_exit()
-if len(branches) == 1:
+    global_source = 'HEAD'
+    global_destinations = {current_branch}
+elif len(branches) == 1:
     global_source = 'HEAD'
     global_destinations = {branches[0]}
 else:
