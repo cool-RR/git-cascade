@@ -123,6 +123,14 @@ If only one argument is specified, git cascade will assume you want to cascade
 
 Will cascade `HEAD` into `staging` and all of its dependents.
 
+If no arguments are specified:
+
+    git cascade
+    
+Then HEAD will be cascaded into the current branch. (It's often useful to
+cascade a branch into itself because it also merges it into the branches it
+flows into.)
+
 
 How does it work?
 -----------------
