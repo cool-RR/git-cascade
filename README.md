@@ -248,7 +248,7 @@ Copyright and license
 
 Both scripts are copyright 2009-2014 Ram Rachum and are released under the MIT
 license. I provide 
-[freelance Django/Python development services](https://chipmunkdev.com).
+[development services in Python and Django](https://chipmunkdev.com).
 
 
 
