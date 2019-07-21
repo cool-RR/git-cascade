@@ -177,7 +177,7 @@ def to_branches_set(branch_or_branches):
     if isinstance(branch_or_branches, str):
         return {branch_or_branches}
     else:
-        assert isinstance(branch_or_branches, collections.Iterable)
+        assert isinstance(branch_or_branches, collections.abc.Iterable)
         return set(branch_or_branches)
     
 def show_help_and_exit():
